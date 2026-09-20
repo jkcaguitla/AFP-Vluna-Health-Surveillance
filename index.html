@@ -977,7 +977,9 @@ async function logActivity(moduleTag, action, detail, notifyUserIds, refId) {
     // Activity Log module jump straight to it instead of just naming the
     // module. Left blank for activity with no single record (bulk imports,
     // settings changes, etc.).
-    refId: refId || "",
+    // A uuid column rejects "" as invalid input (HTTP 400) — must be a
+    // real uuid or null, never an empty string.
+    refId: refId || null,
     timestamp: nowISO()
   };
   const created = await Repo.create("activity", entry);
@@ -4912,7 +4914,7 @@ Modules.birthcert = {
   emptyRecord(caseObj) {
     return {
       caseId: caseObj.id, patientId: caseObj.patientId, step: 1, status: "In Progress",
-      assignedAdminSec: "",
+      assignedAdminSec: null,
       step1: { colbForm: false, marriageCert: false, validIdFather: false, validIdMother: false, submissionDate: "", remarks: "", completed: false, dueDate: "" },
       step2: { colbCopies: false, doctorSignature: false, parentsReview: false, completionDate: "", remarks: "", completed: false },
       step3: { submissionDate: "", remarks: "", completed: false },
